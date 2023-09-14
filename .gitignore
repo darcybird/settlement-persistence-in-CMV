@@ -50,3 +50,5 @@ rsconnect/
 
 #large files
 *.tif
+*.gpkg
+*.zip
