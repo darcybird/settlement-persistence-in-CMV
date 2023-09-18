@@ -52,6 +52,7 @@ rsconnect/
 *.tif
 *.gpkg
 *.zip
+*.Rds
 
 #mac things
 *.DS_Store
