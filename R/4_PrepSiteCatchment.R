@@ -11,7 +11,7 @@ values(empty_rast) <- 1
 # make cells catchments areas ----
 reese <- readr::read_csv(
   here::here(
-    "data/data-raw/Kelsey_data/4-occupation-by-household.csv"
+    "data/data-raw/Reese2021/4-occupation-by-household-public.csv"
   )) %>% 
   tidyr::pivot_longer(cols = c(X450:X1300), names_to = "year", values_to = "nHouse") %>% 
   dplyr::mutate(year = as.numeric (stringr::str_remove_all(year, "X"))) %>% 
@@ -27,8 +27,6 @@ cells_sites <-
                    by = c("SITE_ID" = "SITE_ID", "SITE_NO" = "SITE_NO")) %>% 
   #rename so the rest of the script works 
   dplyr::rename(cell = dummyCell) %>% 
-  
-  
   # the below is the script run, but is dependent on locational information, which we cannot publicly provide
   # to run, uncomment lines  34-48 and comment out lines 27 -30
   
@@ -51,8 +49,9 @@ cells_sites <-
 
 
 # Aggregate nHouses by cell and year to get total houses per cell per year
-dplyr::group_by(cell, year) %>%
-  dplyr::summarise(nHouse = sum(nHouse, na.rm = FALSE)) %>%
+  dplyr::group_by(cell, year) %>%
+  dplyr::summarise(nHouse = sum(nHouse, na.rm = FALSE),
+                   center = max(CENTER)) %>%
   # Regroup by cells, and create nested tibbles
   dplyr::group_by(cell) %>%
   tidyr::nest(.key = "occupation") %>%
@@ -195,10 +194,11 @@ catchmentMaize_all <-
   dplyr::left_join(y = maxCatch, by = c("cell" = "cell", "year" = "year")) %>% 
   dplyr::left_join(y = prefCatch, by = c("cell" = "cell", "year" = "year")) %>% 
   #join to get center status
-  dplyr::left_join(y = reese_cells %>% 
-                     dplyr::select(cell, year, CENTER), 
-                   by = c("cell" = "cell", "year" = "year"))%>% 
-  dplyr::rename(center = CENTER)
+  dplyr::left_join(y = cells_sites %>% 
+                     sf::st_drop_geometry() %>% 
+                     tidyr::unnest(occupation) %>% 
+                     dplyr::select(cell, year, center), 
+                   by = c("cell" = "cell", "year" = "year"))
 
 #we'll use this for after the simulation
 catchmentMaize_all %>% 

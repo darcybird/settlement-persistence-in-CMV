@@ -88,15 +88,17 @@ bouts <-
 
 
 #export and save
-bouts %>% saveRDS(here::here("data/data-derived/prepAnalysis/bouts.rds"))
+# bouts %>% saveRDS(here::here("data/data-derived/prepAnalysis/bouts.rds"))
+bouts %>% readr::write_csv(here::here("data/data-derived/prepAnalysis/bouts.csv"))
 
-bouts <- readRDS(here::here("data/data-derived/prepAnalysis/bouts.rds"))
+# bouts <- readRDS(here::here("data/data-derived/prepAnalysis/bouts.rds"))
 
 bouts %>% 
   dplyr::rowwise() %>% 
   dplyr::mutate(year = list(start:end)) %>% 
   dplyr::select(-start, -end) %>% 
   tidyr::unnest(year) %>% 
-  saveRDS(here::here("data/data-derived/prepAnalysis/yearlybouts.rds"))
+  readr::write_csv(here::here("data/data-derived/prepAnalysis/yearlybouts.csv"))
+  # saveRDS(here::here("data/data-derived/prepAnalysis/yearlybouts.rds"))
 
 
