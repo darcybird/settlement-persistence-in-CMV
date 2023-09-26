@@ -131,7 +131,7 @@ backgroundVN <- cellDesireability %>% terra::focal(w = vonNeumann, fun = "mean")
 #export it to save time
 backgroundVN %>% terra::writeRaster(here::here("data/data-derived/maizeNiche/backgroundVN.tif"), overwrite = TRUE)
 
-# standardize background ----
+# create background maize median ----
 backgroundVN <- terra::rast(here::here("data/data-derived/maizeNiche/backgroundVN.tif"))
 
 getMedians <-  function(data){
