@@ -228,7 +228,7 @@ catchmentClose <-
 
 #we'll use this to calculate local catchment quality
 catchmentClose %>% 
-  saveRDS(here::here("data/data-derived/Simulated_catchment/catchmentClose_0s.RDS"))
+  saveRDS(here::here("data/data-derived/Simulated_catchment/catchmentClose.RDS"))
 
 
 

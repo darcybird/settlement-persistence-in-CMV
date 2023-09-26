@@ -6,7 +6,7 @@ library(magrittr)
 
 # create local quality ----
 catchmentClose <- 
-  readRDS(here::here("data/data-derived/Simulated_catchment/catchmentClose_0s.RDS"))
+  readRDS(here::here("data/data-derived/Simulated_catchment/catchmentClose.RDS"))
 
 maizeWts <- terra::rast("data/data-derived/maizeNiche/maizeWts.tif") %>% 
   magrittr::extract2(as.character(600:1300)) %T>%
@@ -58,7 +58,7 @@ extractMaize <- function(catchment, maize, startyear){
     }
   )
 }
-#the below script will take awhile and it's not the most graceful, but it does work. 
+#the below script (and above function) will take awhile and it's not the most graceful, but it does work. 
 localCatchmentQuality <- 
   dplyr::bind_rows(
     #note that this is for a computer with 16GB of RAM. Less ram will require more separations
@@ -161,11 +161,6 @@ yearlyMedian <- data.frame(year= seq(600,1300,1),
 #export to save time for future
 yearlyMedian %>%  readr::write_csv(here::here("data/data-derived/prepAnalysis/yearlyMedian.csv"))
 
-
-#load in the actual data
-yearlyMedian <- readr::read_csv(here::here("data/data-derived/prepAnalysis/yearlyMedian.csv"))
-localCatchmentQuality <- readr::read_csv(here::here("data/data-derived/prepAnalysis/localCatchmentQuality-public.csv"))
-
 catchmentQuality <- localCatchmentQuality %>% 
   dplyr::left_join(yearlyMedian %>% 
                      dplyr::select(year, medianAvailable), 
@@ -174,6 +169,13 @@ catchmentQuality <- localCatchmentQuality %>%
   dplyr::rename(localCatchmentQuality = meanMaize) %>% 
   dplyr::select(-medianAvailable) %>% 
   dplyr::distinct()
+
+catchmentQuality %>% saveRDS("data/data-derived/prepAnalysis/catchmentQuality.rds")
+
+
+#load in the actual data
+catchmentQuality <- readr::read_csv(here::here("data/data-derived/prepAnalysis/CatchmentQuality-public.csv"))
+
 
 #add to bouts
 bouts_dg <-  

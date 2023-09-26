@@ -82,9 +82,7 @@ fieldContention %>%
 
 #load in actual field contention values
 
-fieldContention <- readr::read_csv(here::here("data/data-derived/prepAnalysis/fieldContention.csv"))
-
-
+fieldContention <- readr::read_csv(here::here("data/data-derived/prepAnalysis/fieldContention-public.csv"))
 
 # N contemporaneous houses ----
 
