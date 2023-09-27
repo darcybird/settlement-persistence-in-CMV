@@ -93,8 +93,7 @@ bouts <- readr::read_csv(here::here("data/data-derived/prepAnalysis/bouts.csv"))
 
 bouts %>% 
   dplyr::rowwise() %>% 
-  dplyr::mutate(year = list(start:end)) %>% 
-  dplyr::select(-start, -end) %>% 
+  dplyr::mutate(year = list(start:end)) %>%
   tidyr::unnest(year) %>% 
   readr::write_csv(here::here("data/data-derived/prepAnalysis/yearlybouts.csv"))
 

@@ -66,7 +66,7 @@ fieldContention <- maizeLoad %>%
   tidyr::pivot_longer(cols = c(minSite:maxHouse)) %>% 
   dplyr::mutate(Considering = factor(ifelse(name  %in% 
                                        c("minHouse", "medianHouse", "meanHouse", "maxHouse"), 
-                                     "nHouse", "nCells")),
+                                     "nHouse", "nCells")) )  ,
                 name = stringr::str_remove(name, "Site"),
                 name = stringr::str_remove(name, "House")) 
 
@@ -85,12 +85,10 @@ fieldContention %>%
 fieldContention <- readr::read_csv(here::here("data/data-derived/prepAnalysis/fieldContention-public.csv"))
 
 # N contemporaneous houses ----
-
 nHouse <- readRDS(here::here("data/data-derived/Simulated_catchment/catchmentMaize_all.RDS")) %>% 
   dplyr::select(cell, year, nHouse)
 
 # regional pop ----
-
 reese_regionalPop <- readr::read_csv(here::here("data/data-raw/Reese2021/7-region-population-by-household.csv"),
                                      col_names = c("year", "modelledpop"),
                                      col_types =  list(col_integer(), col_integer())) %>% 

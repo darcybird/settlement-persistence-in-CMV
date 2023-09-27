@@ -116,23 +116,16 @@ unoccupied_rast[['1031']] %>% terra::plot()
 fieldDesireability[['1031']] %>% terra::plot()
 
 # Calculate cell deireability ----
-# NOTE TO REVIEWERS: the submitted manuscript has an inaccurate description of this step 
+# NOTE TO REVIEWERS: the submitted manuscript has an inaccurate description of this step.
 
-# I actually used vonNeumann with a 1 cell radius (line 125). I wrote that I used the 2 cell radius (line 126).
+# I didn't actually use either von Neumann radius. I actually just used maizeWts.
 # The difference is minimal. I will rerun these shortly to confirm that the results are the same. 
 # When I resubmit, I intend to use the 2 cell radius.
 # But for now, I'm including the script as it was run, rather than how I thought I ran it.
-vonNeumann <- matrix(c(0,1,0,1,1,1,0,1,0), nrow=3)
-vonNeumannR2 <- matrix(c(0,0,1,0,0,0,1,2,1,0,1,2,2,2,1,0,1,2,1,0,0,0,1,0,0), nrow = 5)
 
-#  use the terra::focal function to calculate the quality of cells for habitation. This will take awhile
-backgroundVN <- cellDesireability %>% terra::focal(w = vonNeumann, fun = "mean")
-
-#export it to save time
-backgroundVN %>% terra::writeRaster(here::here("data/data-derived/maizeNiche/backgroundVN.tif"), overwrite = TRUE)
-
-# create background maize median ----
-backgroundVN <- terra::rast(here::here("data/data-derived/maizeNiche/backgroundVN.tif"))
+# vonNeumannR2 <- matrix(c(0,0,1,0,0,0,1,2,1,0,1,2,2,2,1,0,1,2,1,0,0,0,1,0,0), nrow = 5)
+# use the terra::focal function to calculate the quality of cells for habitation. This will take awhile
+# backgroundVNR2 <- cellDesireability %>% terra::focal(w = vonNeumann, fun = "mean")
 
 getMedians <-  function(data){
   out <- 
@@ -155,7 +148,7 @@ getMedians <-  function(data){
 } 
 
 yearlyMedian <- data.frame(year= seq(600,1300,1), 
-                           medianAvailable = getMedians(data = backgroundVN)%>%
+                           medianAvailable = getMedians(data = MaizeWts)%>%
                              unlist() )
 
 #export to save time for future
@@ -174,7 +167,9 @@ catchmentQuality %>% saveRDS("data/data-derived/prepAnalysis/catchmentQuality.rd
 
 
 #load in the actual data
-catchmentQuality <- readr::read_csv(here::here("data/data-derived/prepAnalysis/CatchmentQuality-public.csv"))
+# note that relativeToAvailable is the BackgroundVN with 1 radius, relativeToAll is just maizeWts
+catchmentQuality <- readr::read_csv(here::here("data/data-derived/prepAnalysis/CatchmentQuality-public.csv")) %>% 
+  dplyr::select(year, dummyCell, meanMaize, relativeToAll)
 
 
 #add to bouts
