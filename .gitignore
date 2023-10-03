@@ -53,6 +53,7 @@ rsconnect/
 *.gpkg
 *.zip
 *.Rds
+*.nc4
 
 #mac things
 *.DS_Store
