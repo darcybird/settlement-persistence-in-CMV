@@ -36,28 +36,28 @@ cells_sites <-
 
 # the below is the script run, but is dependent on locational information, which we cannot publicly provide
 # Join all arch sites on the same cell and consider them one settlement.
-cells_sites <- 
-  reese %>%
-  # make into a spatial vector
-  dplyr::rename(x = X_COORDS,
-                y= Y_COORDS) %>%
-  dplyr::select(year, SITE_NO, nHouse, CENTER, x, y) %>%
-  sf::st_as_sf(# can turn into spatvector
-    coords = c("x", "y"),
-    crs = "EPSG:26912") %>%
-  # First, calculate the cell that each site is within
-  dplyr::mutate(
-    cell =
-      terra::cellFromXY(
-        object = empty_rast,
-        xy = sf::st_coordinates(geometry)
-      ) %>%
-      as.integer() )%>%
-  sf::st_drop_geometry() %>%
-  # Aggregate nHouses by cell and year to get total houses per cell per year
-  dplyr::group_by(cell, year) %>%
-  dplyr::summarise(nHouse = sum(nHouse, na.rm = FALSE),
-                   center = max(CENTER)) 
+# cells_sites <- 
+#   reese %>%
+#   # make into a spatial vector
+#   dplyr::rename(x = X_COORDS,
+#                 y= Y_COORDS) %>%
+#   dplyr::select(year, SITE_NO, nHouse, CENTER, x, y) %>%
+#   sf::st_as_sf(# can turn into spatvector
+#     coords = c("x", "y"),
+#     crs = "EPSG:26912") %>%
+#   # First, calculate the cell that each site is within
+#   dplyr::mutate(
+#     cell =
+#       terra::cellFromXY(
+#         object = empty_rast,
+#         xy = sf::st_coordinates(geometry)
+#       ) %>%
+#       as.integer() )%>%
+#   sf::st_drop_geometry() %>%
+#   # Aggregate nHouses by cell and year to get total houses per cell per year
+#   dplyr::group_by(cell, year) %>%
+#   dplyr::summarise(nHouse = sum(nHouse, na.rm = FALSE),
+#                    center = max(CENTER)) 
 
 #export for script 6
 cells_sites %>% saveRDS(here::here("data/data-derived/reese/cells_sites.rds"))
