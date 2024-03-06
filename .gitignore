@@ -49,7 +49,6 @@ po/*~
 rsconnect/
 
 #large files
-*.tif
 *.gpkg
 *.zip
 *.Rds

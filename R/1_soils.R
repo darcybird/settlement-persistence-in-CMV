@@ -1,7 +1,5 @@
 library(magrittr)
 library(tidyverse)
-# library(paleocar)
-# library(villager)
 library(terra)
 library(robinson2020)
 library(tidyterra)
@@ -23,9 +21,6 @@ study_area_grid  <-
 
 values(study_area_grid) <- 0
 
-# study_area_grid %>% writeRaster(here::here("data/data-derived/CMVbuff.tif"))
-
-
 ##### SSURGO CODE ----
 
 #load in soils data
@@ -34,8 +29,8 @@ ssurgo <-
                                    "CO671",
                                    "CO672"),
                       label = "survey_areas",
-                      extraction.dir = "data/data-raw/ssurgo",
-                      raw.dir = "data/data-raw/ssurgo")
+                      extraction.dir = "data/data-downloaded/ssurgo",
+                      raw.dir = "data/data-downloaded/ssurgo")
 
 
 
@@ -44,7 +39,7 @@ ssurgo <-
 nhd_reservoirs <- 
   FedData::get_nhd(template = study_area_grid,
                    label = "study_area",
-                   extraction.dir = "data/data-raw/nhd") %$%
+                   extraction.dir = "data/data-downloaded/nhd") %$%
   Waterbody %>% 
   dplyr::filter(
     stringr::str_starts(FCODE, stringr::fixed("43")) | 
@@ -75,25 +70,21 @@ handplantable <-
     method = "none",
     areasymbols = c("CO670",
                     "CO671",
-                    "CO672")
-  ) %>% 
+                    "CO672")) %>% 
   tibble::as_tibble() %>%
+  #keep only moderately or well-suited handplanting quality
   dplyr::mutate(suitable_percent = ifelse(class_FORHandPlantingSuitability %in% 
-                                            c(
-                                              # "Not rated", 
-                                              # "Unsuited", 
-                                              # "Poorly suited",
-                                              "Moderately suited", 
-                                              "Well suited"
-                                            ), comppct_r, 0)) %>%
+                                            c("Moderately suited", 
+                                              "Well suited"), 
+                                          comppct_r, 0)) %>%
   
   dplyr::group_by(mukey, muname) %>%
   dplyr::summarise(suitable_percent = sum(suitable_percent))
 
 
 ## Use the VEP Drained DEM and fill edges with undrained DEM
-vep_drained <- terra::rast("data/data-raw/ned/VEPIIN_NED_1_drained.tif")
-study_area_dem <- terra::rast("data/data-raw/ned/study_area_NED_1.tif")
+vep_drained <- terra::rast(here::here("data/data-raw/ned/VEPIIN_NED_1_drained.tif"))
+study_area_dem <- terra::rast(here::here("data/data-raw/ned/study_area_NED_1.tif"))
 
 study_area_drained_dem <-
   vep_drained %>%
@@ -143,7 +134,7 @@ ssurgo_model <-
   e1071::naiveBayes(mukey ~ x + y + VEPIIN_NED_1_drained, + TPI, 
                     data = .)
 
-
+#fill all the NAs with the modelled values
 mukey_rast[is.na(mukey_rast)] <-
   predict(ssurgo_model,
           newdata = list(mukey_rast,
