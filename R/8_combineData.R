@@ -62,6 +62,18 @@ bout_slicemod <- yearlybouts %>%
   dplyr::left_join(geo, by = c("year" = "year", "cell" = "cell")) %>% 
   dplyr::mutate(nCenters = ifelse(is.na(nCenters_18km), 0, nCenters_18km))
 
+
+check <- bout_slicemod %>% dplyr::filter(year > 960, year < 1050) 
+
+check %>% 
+  ggplot(aes(x = midSlice, y = nHouse, color = factor(center)))+
+  geom_jitter() +
+  facet_wrap(vars(event))
+
+cells_inst %>% dplyr::filter(year > 950, year < 1050)%>% 
+  ggplot(aes(x = year, fill = institution ))+
+  geom_histogram(position = "stack", bins = 126) 
+
 #summarize these variables by SliceNo
 bout_slicemod_abs <- bout_slicemod %>% 
   dplyr::mutate(nHouse = ifelse(nHouse <1, 1, nHouse)) %>% 

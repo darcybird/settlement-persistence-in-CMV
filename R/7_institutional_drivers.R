@@ -131,6 +131,7 @@ cells_inst %>%
   ggplot(aes(x = year,   fill = institution ))+
   geom_histogram(position = "stack", bins = 701)
 
+
 #### Get institution distances! ------
 
 #vectorize the institution data

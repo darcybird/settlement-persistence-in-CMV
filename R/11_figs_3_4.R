@@ -2,6 +2,15 @@ library(tidyverse)
 library(ggpubr)
 
 
+pecos_wide <- 
+  tibble::tibble(
+    pecos = c( "BMIII", "PI", "PII",  "PIII"), #Bocinsky 2016 exploration/Exploitation ages
+    StartDate = c(600, 700, 890,  1145),
+    EndDate = c(700, 890,  1145,  1285)) %>% 
+  dplyr::mutate(pecos = factor(pecos,
+                               levels = unique(pecos),
+                               ordered = TRUE),
+                MidDate = (EndDate+StartDate) / 2)
 #make figs3 ----
 
 bout_slicemod_abs_20 <- readRDS(here::here("data/data-derived/prepAnalysis/bout_slicemod_abs_20.rds"))
@@ -60,30 +69,27 @@ dev.off()
 
 
 #make figure 4 ----
-bouts <-  readRDS(here::here("data/data-derived/prepAnalysis/bouts_noInterbouts_broad.rds"))  %>% 
+
+bouts <-  readRDS(here::here("data/data-derived/prepAnalysis/vep_bouts_noInterbouts_broad.rds"))  %>% 
   dplyr::mutate(contains_center = factor(center, levels = c(0, 1), labels = c( "Hamlet", "Community Center")))
 
 
-pecos_wide <- 
-  tibble::tibble(
-    pecos = c( "BMIII", "PI", "PII",  "PIII"), #Bocinsky 2016 exploration/Exploitation ages
-    StartDate = c(600, 700, 890,  1145),
-    EndDate = c(700, 890,  1145,  1285)) %>% 
-  dplyr::mutate(pecos = factor(pecos,
-                               levels = unique(pecos),
-                               ordered = TRUE),
-                MidDate = (EndDate+StartDate) / 2)
+
 
 fig4 <-
   ggplot()+
-  geom_errorbarh(data = bouts,
-                 aes(xmin = start, xmax= end, y = boutLength, color = contains_center),
-                 linewidth = 0.2)+
+  geom_point(data = bouts,
+             aes(x = start,  y = boutLength, color = contains_center),
+             alpha =  0.5, size = 1)+
+  geom_smooth(data = bouts,
+              aes(x = start,  y = boutLength, color = contains_center),
+              method = "gam")+
   theme_minimal() +
   scale_color_manual(values = c("#E69F00", "#56B4E9"))+
-  xlab("Starting and Ending Year for each Occupation Span") +
-    ylab("Occupation Span")+
-  scale_y_continuous(breaks = c(8, 20, 50, 100, 150, 269)) +
+  xlab("Start Year for each Occupation Span") +
+  ylab("Occupation Span")+
+  scale_y_continuous(breaks = c(8, 20, 50, 100, 150, 269),
+                     limits = c(0,280)) +
   geom_vline( aes(xintercept = as.numeric(EndDate)),
               data = pecos_wide) +
   geom_text( aes(x = MidDate,
@@ -98,7 +104,8 @@ fig4 <-
         axis.title = element_text(size = 12),
         # axis.text.x = element_blank(),
         axis.text.y = element_text(size = 10),
-        strip.text.x = element_text(size = 10))
+        strip.text.x = element_text(size = 10),
+        panel.grid = element_blank())
 
 fig4
 

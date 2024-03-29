@@ -1,7 +1,0 @@
-fixed,estimate,se,tVal,bottom_2_5,top_97_5
-(Intercept),3.11,0.06,53.18,2.993,3.227
-isCenter1,0.18,0.03,7.05,0.131,0.234
-std_log_cellHouse,0.23,0.01,28.1,0.211,0.243
-std_localCatchment,-0,0.01,-0.32,-0.017,0.012
-std_nCenter_18km,0.02,0.01,2.09,0.001,0.037
-std_nType_18km,0.05,0.01,4.7,0.028,0.07

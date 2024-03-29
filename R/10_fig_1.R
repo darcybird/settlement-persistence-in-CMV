@@ -34,7 +34,7 @@ fig1 <-
   ggplot()+
   geom_spatraster(data = study_area_dem, aes(fill = layer))+
   scale_fill_gradientn(colours = terrain.colors(10),
-                        guide = guide_legend(title="Elevation (m)")) +
+                       guide = guide_legend(title="Elevation (m)")) +
   # geom_spatvector(data = CMV_surveys, alpha = 0.1)#+
   scale_fill_gradientn(colours = terrain.colors(10)) +
   geom_spatvector(data = cell_grouped, 
@@ -42,8 +42,9 @@ fig1 <-
                        color = containsCenter, 
                        shape = containsCenter)))+
   scale_color_manual(values = c("black", "red"))+
-   ggspatial::annotation_scale()+
-    theme_bw() 
+  ggspatial::annotation_scale()+
+  theme_bw() +
+  coord_sf(expand = FALSE)
 
 fig1
 
